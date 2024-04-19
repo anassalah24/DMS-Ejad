@@ -3,8 +3,8 @@
 #include "basiccameracomponent.h"
 
 //constructor
-BasicCameraComponent::BasicCameraComponent(ThreadSafeQueue<cv::Mat>& outputQueue)
-: outputQueue(outputQueue), running(false) {}
+BasicCameraComponent::BasicCameraComponent(ThreadSafeQueue<cv::Mat>& outputQueue,ThreadSafeQueue<std::string>& commandsQueue,ThreadSafeQueue<std::string>& faultsQueue)
+: outputQueue(outputQueue),commandsQueue(commandsQueue),faultsQueue(faultsQueue), running(false) {}
 
 
 //destructor

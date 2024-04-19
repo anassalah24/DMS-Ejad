@@ -1,6 +1,8 @@
 #include <opencv2/opencv.hpp>
 #include "threadsafequeue.h"
 #include "dmsmanager.h"
+#include <benchmark/benchmark.h>
+
 
 int main() {
 
@@ -13,11 +15,12 @@ int main() {
     ThreadSafeQueue<CarState> stateOutputQueue;
     ThreadSafeQueue<int> postOutputQueue;
     ThreadSafeQueue<std::string> commandsQueue;
+    ThreadSafeQueue<std::string> faultsQueue;
 
     int tcpPort = 12345;  // Define the TCP port for the server
 
     // Initialize the DMSManager with all necessary queues and the TCP port
-    DMSManager dmsManager(cameraQueue, preprocessingQueue, faceDetectionQueue, tcpOutputQueue, tcpPort, stateOutputQueue, postOutputQueue,commandsQueue);
+    DMSManager dmsManager(cameraQueue, preprocessingQueue, faceDetectionQueue, tcpOutputQueue, tcpPort, stateOutputQueue, postOutputQueue,commandsQueue,faultsQueue);
 
     // Initialize the camera component
     if (!dmsManager.initializeCamera("/dev/video0")) { // use /dev/video0 for camera or /path/to/video/file
@@ -41,6 +44,7 @@ int main() {
         std::cerr << "Failed to start the system." << std::endl;
         return -1;
     }
+
 
     // Main loop (The display code is commented out; uncomment if needed)
 
@@ -66,6 +70,7 @@ int main() {
     // Shutdown the system
     dmsManager.stopSystem();
     std::cout << "System stopped." << std::endl;
+
 
     return 0;
 }

@@ -4,8 +4,9 @@
 
 
 //constructor
-BasicPreprocessingComponent::BasicPreprocessingComponent(ThreadSafeQueue<cv::Mat>& inputQueue, ThreadSafeQueue<cv::Mat>& outputQueue)
-: inputQueue(inputQueue), outputQueue(outputQueue), running(false) {}
+BasicPreprocessingComponent::BasicPreprocessingComponent(ThreadSafeQueue<cv::Mat>& inputQueue, ThreadSafeQueue<cv::Mat>& outputQueue,
+ThreadSafeQueue<std::string>& commandsQueue,ThreadSafeQueue<std::string>& faultsQueue)
+: inputQueue(inputQueue), outputQueue(outputQueue),commandsQueue(commandsQueue),faultsQueue(faultsQueue),running(false) {}
 
 BasicPreprocessingComponent::~BasicPreprocessingComponent() {
     stopProcessing();

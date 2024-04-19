@@ -6,7 +6,8 @@
 using namespace std;
 
 //constructor
-VehicleStateManager::VehicleStateManager(ThreadSafeQueue<CarState>& outputQueue):outputQueue(outputQueue),running(false) {}
+VehicleStateManager::VehicleStateManager(ThreadSafeQueue<CarState>& outputQueue,ThreadSafeQueue<std::string>& commandsQueue,ThreadSafeQueue<std::string>& faultsQueue)
+:outputQueue(outputQueue),commandsQueue(commandsQueue),faultsQueue(faultsQueue),running(false) {}
 
 //destructor
 VehicleStateManager::~VehicleStateManager() {}

@@ -1,9 +1,17 @@
 #include "dmsmanager.h"
+#include <benchmark/benchmark.h>
 
 //Constructor ; passes input and ouptut queues for different component and tcp port
-DMSManager::DMSManager(ThreadSafeQueue<cv::Mat>& cameraQueue, ThreadSafeQueue<cv::Mat>& preprocessingQueue, ThreadSafeQueue<cv::Mat>& faceDetectionQueue,ThreadSafeQueue<cv::Mat>& tcpOutputQueue, int tcpPort , ThreadSafeQueue<CarState>& stateOutputQueue , ThreadSafeQueue<int>& postOutputQueue,ThreadSafeQueue<std::string>& commandsQueue)
-: cameraComponent(cameraQueue), preprocessingComponent(cameraQueue, preprocessingQueue), faceDetectionComponent(cameraQueue, faceDetectionQueue),
-tcpComponent(tcpPort, faceDetectionQueue,commandsQueue),vehicleStateManager(stateOutputQueue),postProcessingComponent(stateOutputQueue, postOutputQueue), cameraQueue(cameraQueue), preprocessingQueue(preprocessingQueue), faceDetectionQueue(faceDetectionQueue), tcpPort(tcpPort),stateOutputQueue(stateOutputQueue),postOutputQueue(postOutputQueue),commandsQueue(commandsQueue),running(false) {}//change back the tcp queue
+DMSManager::DMSManager(ThreadSafeQueue<cv::Mat>& cameraQueue, ThreadSafeQueue<cv::Mat>& preprocessingQueue, ThreadSafeQueue<cv::Mat>& faceDetectionQueue,ThreadSafeQueue<cv::Mat>& tcpOutputQueue, int tcpPort , ThreadSafeQueue<CarState>& stateOutputQueue , ThreadSafeQueue<int>& postOutputQueue,ThreadSafeQueue<std::string>& commandsQueue,ThreadSafeQueue<std::string>& faultsQueue)
+:cameraComponent(cameraQueue,commandsQueue,faultsQueue),
+preprocessingComponent(cameraQueue, preprocessingQueue,commandsQueue,faultsQueue), 
+faceDetectionComponent(cameraQueue, faceDetectionQueue,commandsQueue,faultsQueue),
+tcpComponent(tcpPort, faceDetectionQueue,commandsQueue,faultsQueue),
+vehicleStateManager(stateOutputQueue,commandsQueue,faultsQueue),
+postProcessingComponent(stateOutputQueue, postOutputQueue,commandsQueue,faultsQueue),
+faultManager(commandsQueue, faultsQueue),
+cameraQueue(cameraQueue),preprocessingQueue(preprocessingQueue), faceDetectionQueue(faceDetectionQueue), tcpPort(tcpPort),stateOutputQueue(stateOutputQueue),postOutputQueue(postOutputQueue),
+commandsQueue(commandsQueue),faultsQueue(faultsQueue),running(false) {}//change back the tcp queue
 
 //destructor (cleanup)
 DMSManager::~DMSManager() {
@@ -25,8 +33,10 @@ bool DMSManager::startSystem() {
     vehicleStateThread = std::thread(&DMSManager::vehicleStateLoop, this); // Start vehicle state in its own thread
     postProcessingThread = std::thread(&DMSManager::postprocessingLoop, this); // Start post processing in its own thread
     commandsThread = std::thread(&DMSManager::commandsLoop, this); // Start commands thread in its own thread
+    faultsThread = std::thread(&DMSManager::faultsLoop, this); // Start faults thread in its own thread
     return true;
 }
+
 
 void DMSManager::stopSystem() {
 
@@ -38,6 +48,7 @@ void DMSManager::stopSystem() {
     tcpComponent.stopServer();
     vehicleStateManager.stopStateManager();
     postProcessingComponent.stopPostProcess();
+    faultManager.faultstop();
 	
 
    
@@ -49,7 +60,7 @@ void DMSManager::stopSystem() {
     if (vehicleStateThread.joinable()) vehicleStateThread.join();
     if (postProcessingThread.joinable()) postProcessingThread.join();
     if (commandsThread.joinable()) commandsThread.join();
-
+    if (faultsThread.joinable()) faultsThread.join();
 
 
     // ADD Additional cleanup if necessary
@@ -77,6 +88,9 @@ void DMSManager::postprocessingLoop(){
     postProcessingComponent.postProcess();
 }
 
+void DMSManager::faultsLoop(){
+    faultManager.faultstart();
+}
 
 //loop for DMSmanager component to check for any needed commands by components
 void DMSManager::commandsLoop(){

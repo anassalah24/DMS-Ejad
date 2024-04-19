@@ -18,7 +18,7 @@ struct EyeGaze {
 
 class PostProcessingComponent {
 public:
-    PostProcessingComponent(ThreadSafeQueue<CarState>& inputQueue, ThreadSafeQueue<int>& outputQueue);
+    PostProcessingComponent(ThreadSafeQueue<CarState>& inputQueue, ThreadSafeQueue<int>& outputQueue,ThreadSafeQueue<std::string>& commandsQueue,ThreadSafeQueue<std::string>& faultsQueue);
     ~PostProcessingComponent();
 
     void parseHeadPose(const std::string& headposeFilePath);
@@ -59,6 +59,8 @@ public:
 private:
     ThreadSafeQueue<CarState>& inputQueue; 
     ThreadSafeQueue<int>& outputQueue;
+    ThreadSafeQueue<std::string>& commandsQueue;
+    ThreadSafeQueue<std::string>& faultsQueue;
 
     HeadPose headPose;
     EyeGaze eyeGaze;

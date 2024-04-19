@@ -36,8 +36,8 @@ constexpr int16_t PostProcessingComponent::DELAY_2S;
 //--------------------------------------------------------
 
 // Constructor
-PostProcessingComponent::PostProcessingComponent(ThreadSafeQueue<CarState>& inputQueue, ThreadSafeQueue<int>& outputQueue)
-: inputQueue(inputQueue), outputQueue(outputQueue), running(false) {}
+PostProcessingComponent::PostProcessingComponent(ThreadSafeQueue<CarState>& inputQueue, ThreadSafeQueue<int>& outputQueue,ThreadSafeQueue<std::string>& commandsQueue,ThreadSafeQueue<std::string>& faultsQueue)
+: inputQueue(inputQueue), outputQueue(outputQueue),commandsQueue(commandsQueue),faultsQueue(faultsQueue), running(false) {}
 
 // Destructor
 PostProcessingComponent::~PostProcessingComponent() {}

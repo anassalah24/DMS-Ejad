@@ -6,7 +6,7 @@
 
 class FaceDetectionComponent {
 public:
-    FaceDetectionComponent(ThreadSafeQueue<cv::Mat>& inputQueue, ThreadSafeQueue<cv::Mat>& outputQueue);
+    FaceDetectionComponent(ThreadSafeQueue<cv::Mat>& inputQueue, ThreadSafeQueue<cv::Mat>& outputQueue,ThreadSafeQueue<std::string>& commandsQueue,ThreadSafeQueue<std::string>& faultsQueue);
     ~FaceDetectionComponent();
 
     bool initialize(const std::string& modelConfiguration, const std::string& modelWeights);
@@ -18,6 +18,8 @@ public:
 private:
     ThreadSafeQueue<cv::Mat>& inputQueue;
     ThreadSafeQueue<cv::Mat>& outputQueue;
+    ThreadSafeQueue<std::string>& commandsQueue;
+    ThreadSafeQueue<std::string>& faultsQueue;
     cv::dnn::Net net;
     std::thread detectionThread;
     bool running;

@@ -17,7 +17,7 @@ struct CarState {
 
 class VehicleStateManager {
 public:
-    VehicleStateManager(ThreadSafeQueue<CarState>& outputQueue);
+    VehicleStateManager(ThreadSafeQueue<CarState>& outputQueue,ThreadSafeQueue<std::string>& commandsQueue,ThreadSafeQueue<std::string>& faultsQueue);
     ~VehicleStateManager();
 
     void startStateManager();
@@ -36,6 +36,8 @@ private:
     std::thread stateThread;
     bool running;
     ThreadSafeQueue<CarState>& outputQueue;
+    ThreadSafeQueue<std::string>& commandsQueue;
+    ThreadSafeQueue<std::string>& faultsQueue;
     void stateLoop();
 
 };

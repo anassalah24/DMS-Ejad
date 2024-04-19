@@ -6,10 +6,11 @@
 #include "commtcpcomponent.h"
 #include "vehiclestatemanager.h"
 #include "postprocessingcomponent.h"
+#include "faultmanager.h"
 
 class DMSManager {
 public:
-    DMSManager(ThreadSafeQueue<cv::Mat>& cameraQueue, ThreadSafeQueue<cv::Mat>& preprocessingQueue, ThreadSafeQueue<cv::Mat>& faceDetectionQueue,ThreadSafeQueue<cv::Mat>& tcpOutputQueue, int tcpPort, ThreadSafeQueue<CarState>& stateOutputQueue , ThreadSafeQueue<int>& postOutputQueue,ThreadSafeQueue<std::string>& commandsQueue);
+    DMSManager(ThreadSafeQueue<cv::Mat>& cameraQueue, ThreadSafeQueue<cv::Mat>& preprocessingQueue, ThreadSafeQueue<cv::Mat>& faceDetectionQueue,ThreadSafeQueue<cv::Mat>& tcpOutputQueue, int tcpPort, ThreadSafeQueue<CarState>& stateOutputQueue , ThreadSafeQueue<int>& postOutputQueue,ThreadSafeQueue<std::string>& commandsQueue,ThreadSafeQueue<std::string>& faultsQueue);
     ~DMSManager();
 
     bool startSystem();
@@ -34,6 +35,7 @@ private:
     CommTCPComponent tcpComponent; 
     VehicleStateManager vehicleStateManager;
     PostProcessingComponent postProcessingComponent;
+    FaultManager faultManager;
 
     ThreadSafeQueue<cv::Mat>& cameraQueue;
     ThreadSafeQueue<cv::Mat>& preprocessingQueue;
@@ -45,6 +47,7 @@ private:
 
 
     ThreadSafeQueue<std::string>& commandsQueue;
+    ThreadSafeQueue<std::string>& faultsQueue;
 
 
     std::thread cameraThread;
@@ -54,8 +57,7 @@ private:
     std::thread vehicleStateThread;
     std::thread postProcessingThread; 
     std::thread commandsThread; 
-
-
+    std::thread faultsThread; 
 
     int tcpPort; 
     bool running;
@@ -67,6 +69,7 @@ private:
     void vehicleStateLoop(); 
     void postprocessingLoop(); 
     void commandsLoop();
+    void faultsLoop();
 
 };
 

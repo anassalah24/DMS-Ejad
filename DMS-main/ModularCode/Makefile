@@ -15,11 +15,18 @@ OBJ_DIR := obj
 # Binary directory
 BIN_DIR := bin
 
+# Benchmark directory
+BENCHMARK_DIR := benchmark
+
 # Compiler flags
-CXXFLAGS := -std=c++11 -I$(INCLUDE_DIR) `pkg-config --cflags opencv4`
+#CXXFLAGS := -std=c++11 -I$(INCLUDE_DIR) `pkg-config --cflags opencv4`
+CXXFLAGS := -std=c++11 -I$(INCLUDE_DIR) -isystem $(BENCHMARK_DIR)/include `pkg-config --cflags opencv4`
+
 
 # Linker flags
-LDFLAGS := `pkg-config --libs opencv4` -lpthread
+#LDFLAGS := `pkg-config --libs opencv4` -lpthread
+LDFLAGS := `pkg-config --libs opencv4` -L$(BENCHMARK_DIR)/build/src -lbenchmark -lpthread
+
 
 # OpenCV library path
 OPENCV_LIB_PATH := /usr/local/lib
